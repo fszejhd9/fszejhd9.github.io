@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" x-data="loveLetter()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Love Letter to You 💕</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Alpine.js (CDN) -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Confetti Library (Optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&display=swap" />
+
+  <style>
+    /* 1) Global Body Styles: */
+    body {
+      background: linear-gradient(120deg, #fdfcfb 0%, #e2d1c3 100%);
+      font-family: 'Playfair Display', serif;
+      color: #4b4442;
+    }
+
+    /* 2) Floating Hearts Animation: */
+    .heart-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .heart {
+      color: #ff7b7b;
+      font-size: 2rem;
+      animation: floatUp 5s linear infinite;
+      position: absolute;
+      bottom: -10%;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    /* 3) Press Me Button Pulse: */
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* 4) Letter Container Animation: */
+    .slide-in {
+      animation: slideIn 1s forwards;
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 5) Typewriter effect for the love message */
+    .typewriter {
+      white-space: pre-wrap;
+      border-right: .15em solid #999;
+      overflow: hidden;
+      width: 100%;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.25rem;
+    }
+
+    /* 6) Wave Visualizer Bars: */
+    .wave-bar {
+      width: 5px;
+      background: #ec4899;
+      margin: 0 2px;
+      border-radius: 3px;
+    }
+    .animate-wave1 { animation: wave1 1s infinite ease-in-out; }
+    .animate-wave2 { animation: wave2 1s infinite ease-in-out; }
+    .animate-wave3 { animation: wave3 1s infinite ease-in-out; }
+    .animate-wave4 { animation: wave4 1s infinite ease-in-out; }
+    .animate-wave5 { animation: wave5 1s infinite ease-in-out; }
+    @keyframes wave1 {
+      0%, 100% { height: 20%; }
+      50% { height: 80%; }
+    }
+    @keyframes wave2 {
+      0%, 100% { height: 40%; }
+      50% { height: 90%; }
+    }
+    @keyframes wave3 {
+      0%, 100% { height: 60%; }
+      50% { height: 30%; }
+    }
+    @keyframes wave4 {
+      0%, 100% { height: 30%; }
+      50% { height: 90%; }
+    }
+    @keyframes wave5 {
+      0%, 100% { height: 80%; }
+      50% { height: 40%; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center relative" x-data="loveLetter()">
+  <!-- Floating Hearts -->
+  <div class="heart-container">
+    <template x-for="h in hearts" :key="h.id">
+      <div class="heart" :style="`left: ${h.left}%; animation-delay: ${h.delay}s; font-size: ${h.size}rem; color: ${h.color};`">
+        ❤️
+      </div>
+    </template>
+  </div>
+
+  <!-- Main Content -->
+  <div class="z-10 p-4 w-full max-w-2xl text-center">
+    <!-- Press Me Button -->
+    <button 
+      class="mx-auto block bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-3 px-6 rounded-full text-lg shadow-xl hover:scale-105 transition-transform pulse"
+      x-show="!letterOpened"
+      @click="openLetter"
+    >
+      💌 Press Me
+    </button>
+
+    <!-- Letter Container -->
+    <div x-show="letterOpened" x-transition class="slide-in mt-4 bg-white/80 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
+      <!-- Title -->
+      <h1 class="text-3xl font-bold mb-4 text-pink-600" style="font-family: 'Playfair Display', serif;">
+        My Love Letter to You
+      </h1>
+
+      <!-- Typewriter Text -->
+      <div class="typewriter text-left mx-auto text-gray-700 mb-6 leading-relaxed" x-text="typedText"></div>
+
+      <!-- MP4 Player & Wave Visualizer -->
+      <div x-data="playerControls" x-init="initPlayer" class="mb-6 flex flex-col items-center space-y-4">
+        <!-- Hidden Video/Audio for Playback -->
+        <video 
+          id="myVideo"
+          src="./audios/music_tst.mp4"  
+          @timeupdate="updateTime"
+          @loadedmetadata="loadedMeta"
+          x-ref="videoEl"
+          class="hidden"
+        ></video>
+
+        <!-- Wave Visualizer -->
+        <div class="flex items-end justify-center w-full h-12 space-x-1">
+          <div class="wave-bar" :class="isPlaying ? 'animate-wave1' : ''"></div>
+          <div class="wave-bar" :class="isPlaying ? 'animate-wave2' : ''"></div>
+          <div class="wave-bar" :class="isPlaying ? 'animate-wave3' : ''"></div>
+          <div class="wave-bar" :class="isPlaying ? 'animate-wave4' : ''"></div>
+          <div class="wave-bar" :class="isPlaying ? 'animate-wave5' : ''"></div>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="bg-pink-50/90 border border-pink-200 rounded-md p-4 w-full max-w-md text-left shadow-md">
+          <div class="flex items-center justify-between mb-2">
+            <button 
+              @click="togglePlay"
+              class="bg-pink-500 text-white px-4 py-1 rounded shadow hover:bg-pink-600 transition-colors"
+              x-text="isPlaying ? 'Pause' : 'Play'"
+            ></button>
+            <span class="text-sm text-gray-500" x-text="formatTime(currentTime) + ' / ' + formatTime(duration)"></span>
+          </div>
+          <input 
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            class="w-full accent-pink-500 cursor-pointer"
+            x-model="progress"
+            @input="seek"
+          />
+          <div class="flex items-center mt-2 space-x-2">
+            <span class="text-sm text-gray-500">Volume</span>
+            <input 
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              class="w-full accent-pink-500 cursor-pointer"
+              x-model="volume"
+              @input="changeVolume"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Single Image -->
+      <div class="text-center mt-6">
+        <h2 class="text-xl font-semibold text-pink-600 mb-2">Our Memory</h2>
+        <div class="flex justify-center">
+          <!-- Replace the src below with your desired absolute path -->
+          <img src="./images/20240326_205934.jpg" alt="Memory" class="object-contain w-full max-w-md rounded-lg shadow-md"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOVE LETTER (Alpine.js) -->
+  <script>
+    function loveLetter() {
+      return {
+        letterOpened: false,
+        fullText: `Happy Valentine's Day, my love!\n\nEvery moment with you is a gift—your smile lights up my world, and your laughter warms my heart. Thank you for filling my life with joy, comfort, and endless love. I cherish you today and always. ❤️`,
+        typedText: '',
+        textIndex: 0,
+        hearts: [],
+
+        openLetter() {
+          this.letterOpened = true;
+          this.startTypewriter();
+          this.launchConfetti();
+          this.generateHearts();
+        },
+
+        startTypewriter() {
+          const interval = setInterval(() => {
+            if (this.textIndex < this.fullText.length) {
+              this.typedText += this.fullText.charAt(this.textIndex);
+              this.textIndex++;
+            } else {
+              clearInterval(interval);
+              this.$nextTick(() => {
+                const el = document.querySelector('.typewriter');
+                if (el) el.style.borderRight = 'none';
+              });
+            }
+          }, 40);
+        },
+
+        launchConfetti() {
+          if (typeof confetti !== 'undefined') {
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }
+        },
+
+        generateHearts() {
+          for (let i = 0; i < 15; i++) {
+            this.hearts.push({
+              id: i,
+              left: Math.floor(Math.random() * 100),
+              delay: Math.random() * 5,
+              size: (Math.random() * 1.5) + 1,
+              color: this.randomColor()
+            });
+          }
+        },
+
+        randomColor() {
+          const colors = ['#ff7b7b', '#ff9a9a', '#ffb6b6', '#ffa0e7', '#ff7bde'];
+          return colors[Math.floor(Math.random() * colors.length)];
+        }
+      };
+    }
+  </script>
+
+  <!-- CUSTOM VIDEO/AUDIO PLAYER CONTROLS -->
+  <script>
+    const playerControls = {
+      isPlaying: false,
+      duration: 0,
+      currentTime: 0,
+      progress: 0,
+      volume: 1,
+
+      initPlayer() {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        // Uncomment the following line if you want guaranteed autoplay (muted)
+        // video.muted = true;
+        video.play().then(() => {
+          this.isPlaying = true;
+        }).catch(err => {
+          console.warn("Autoplay blocked or failed:", err);
+        });
+      },
+
+      togglePlay() {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        if (this.isPlaying) {
+          video.pause();
+          this.isPlaying = false;
+        } else {
+          video.play().then(() => {
+            this.isPlaying = true;
+          }).catch(err => {
+            console.warn("Playback error:", err);
+          });
+        }
+      },
+
+      updateTime() {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        this.currentTime = video.currentTime;
+        this.progress = (video.currentTime / video.duration) * 100;
+      },
+
+      loadedMeta() {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        this.duration = video.duration;
+      },
+
+      seek(e) {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        const pct = e.target.value;
+        video.currentTime = (pct / 100) * video.duration;
+      },
+
+      changeVolume() {
+        const video = this.$refs.videoEl;
+        if (!video) return;
+        video.volume = this.volume;
+      },
+
+      formatTime(time) {
+        if (!time || isNaN(time)) return '0:00';
+        let minutes = Math.floor(time / 60);
+        let seconds = Math.floor(time % 60);
+        if (seconds < 10) seconds = '0' + seconds;
+        return `${minutes}:${seconds}`;
+      }
+    };
+  </script>
+</body>
+</html>
