@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Love Letter to You 💕</title>
+  <title>My Love Letter to You</title>
 
   <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,14 +18,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:wght@700&display=swap" />
 
   <style>
-    /* 1) Global Body Styles: */
+    /* 1) Global Body Styles */
     body {
       background: linear-gradient(120deg, #fdfcfb 0%, #e2d1c3 100%);
       font-family: 'Playfair Display', serif;
       color: #4b4442;
     }
 
-    /* 2) Floating Hearts Animation: */
+    /* 2) Floating Hearts Animation */
     .heart-container {
       position: fixed;
       top: 0;
@@ -54,7 +54,7 @@
       }
     }
 
-    /* 3) Press Me Button Pulse: */
+    /* 3) Press Me Button Pulse */
     .pulse {
       animation: pulse 2s infinite;
     }
@@ -64,7 +64,7 @@
       100% { transform: scale(1); }
     }
 
-    /* 4) Letter Container Animation: */
+    /* 4) Letter Container Animation */
     .slide-in {
       animation: slideIn 1s forwards;
       opacity: 0;
@@ -77,7 +77,7 @@
       }
     }
 
-    /* 5) Typewriter effect for the love message */
+    /* 5) Typewriter Effect for the Love Message */
     .typewriter {
       white-space: pre-wrap;
       border-right: .15em solid #999;
@@ -87,7 +87,7 @@
       font-size: 1.25rem;
     }
 
-    /* 6) Wave Visualizer Bars: */
+    /* 6) Wave Visualizer Bars */
     .wave-bar {
       width: 5px;
       background: #ec4899;
@@ -122,7 +122,7 @@
   </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center relative" x-data="loveLetter()">
+<body class="min-h-screen flex items-center justify-center relative">
   <!-- Floating Hearts -->
   <div class="heart-container">
     <template x-for="h in hearts" :key="h.id">
@@ -134,18 +134,18 @@
 
   <!-- Main Content -->
   <div class="z-10 p-4 w-full max-w-2xl text-center">
-    <!-- Press Me Button -->
+    <!-- Press Me Button with a cute emoji -->
     <button 
       class="mx-auto block bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold py-3 px-6 rounded-full text-lg shadow-xl hover:scale-105 transition-transform pulse"
       x-show="!letterOpened"
       @click="openLetter"
     >
-      💌 Press Me
+      💌 Press Me 🧋
     </button>
 
     <!-- Letter Container -->
-    <div x-show="letterOpened" x-transition class="slide-in mt-4 bg-white/80 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
-      <!-- Title -->
+    <div x-show="letterOpened" x-transition class="slide-in mt-4 bg-white/80 rounded-lg shadow-2xl p-6 relative backdrop-blur-sm">
+      <!-- Title with extra romance -->
       <h1 class="text-3xl font-bold mb-4 text-pink-600" style="font-family: 'Playfair Display', serif;">
         My Love Letter to You
       </h1>
@@ -175,7 +175,7 @@
         </div>
 
         <!-- Player Controls -->
-        <div class="bg-pink-50/90 border border-pink-200 rounded-md p-4 w-full max-w-md text-left shadow-md">
+        <div class="bg-pink-50/90 border border-pink-200 rounded-md p-4 w-full max-w-md text-left shadow-lg">
           <div class="flex items-center justify-between mb-2">
             <button 
               @click="togglePlay"
@@ -208,23 +208,22 @@
         </div>
       </div>
 
-      <!-- Single Image -->
+      <!-- Image Slideshow Section (Now Showing a Single Image) -->
       <div class="text-center mt-6">
-        <h2 class="text-xl font-semibold text-pink-600 mb-2">Our Memory</h2>
         <div class="flex justify-center">
-          <!-- Replace the src below with your desired absolute path -->
-          <img src="./static/images/20240326_205934.jpg" alt="Memory" class="object-contain w-full max-w-md rounded-lg shadow-md"/>
+          <!-- Using the provided absolute path -->
+          <img src="./static/images/20240326_205934.jpg" alt="Our Memory" class="object-contain w-full max-w-md rounded-lg shadow-2xl transition-all duration-700 hover:scale-105"/>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- LOVE LETTER (Alpine.js) -->
+  <!-- LOVE LETTER (Alpine.js Logic) -->
   <script>
     function loveLetter() {
       return {
         letterOpened: false,
-        fullText: `Happy Valentine's Day, my love!\n\nEvery moment with you is a gift—your smile lights up my world, and your laughter warms my heart. Thank you for filling my life with joy, comfort, and endless love. I cherish you today and always. ❤️`,
+        fullText: `Happy Valentine's Day, Hridhya! 🧋\n\nEvery moment with you is a gift. Your smile lights up my world, and your laughter warms my heart. Thank you for filling my life with joy, comfort, and endless love. I cherish you today and always. I still remember the first time we met at the library – that magical moment when I knew you were extraordinary. Even when you snore softly at night or lovingly nag me, I know it's just your unique way of caring. I adore how you dance with abandon and how you say "njan maduthu" after a long day at work—it always brings a smile to my face. And oh, your beauty when you wear a pottu! It takes my breath away every time. I remember the night we fought playfully, when our feelings began to blossom, and that unforgettable moment on Merton St. when you confessed your heart. I want to spend eternity with you, sharing every laugh, every tender moment, and every quirky habit. You are my forever. \n\nYours Truly,\nDave Sir`,
         typedText: '',
         textIndex: 0,
         hearts: [],
@@ -293,7 +292,7 @@
       initPlayer() {
         const video = this.$refs.videoEl;
         if (!video) return;
-        // Uncomment the following line if you want guaranteed autoplay (muted)
+        // Uncomment below if you want guaranteed autoplay (muted)
         // video.muted = true;
         video.play().then(() => {
           this.isPlaying = true;
